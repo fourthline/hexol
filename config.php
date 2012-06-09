@@ -6,7 +6,7 @@ define("IRC_SERVER", "irc.reicha.net" );
 define("IRC_PORT", 6667 );
 
 define("IRC_NICKNAME", "t_hexol" );
-define("IRC_REALNAME", "hexol (i'm bot) ÇΩÇÒÇÁÇÈ" );
+define("IRC_REALNAME", "hexol (i'm bot) „Åü„Çì„Çâ„Çã" );
 define("IRC_USERNAME", "hexol" );
 define("PREFIX", "hexol" );
 

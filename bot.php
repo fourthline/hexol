@@ -11,14 +11,20 @@ require_once("Net/SmartIRC.php");
 require_once("mabi/get_today.php");
 
 
+function sjis( $str ) {
+	$result = mb_convert_encoding($str, "SJIS", "UTF-8");
+	
+	return $result;
+}
+
+
 class mybot
 {
 	function update(&$irc) {
-		$str = today_mission_string();
-		$str_sjis = mb_convert_encoding($str, "SJIS", "UTF-8");
+		$str = $str = today_mission_string();
 		
 		print " [ ".date( DATE_COOKIE ). " ] " . "update topic: \"" . $str . "\"\n";
-		$irc->setTopic( IRC_CHANNEL, $str_sjis );
+		$irc->setTopic( IRC_CHANNEL, sjis( $str ) );
 	}
 		
 	function quit(&$irc) {
@@ -48,6 +54,9 @@ class mybot
 		case "update":
 			$this->update( $irc );
 			break;
+		case "getList":
+			$irc->getList();
+			break;
 		case "naruto":
 			$data->channel = IRC_CHANNEL;
 			$data->nick = $param;
@@ -71,8 +80,8 @@ function bot_main()
 	$irc->registerTimehandler( CONNECTION_TIMER, $bot, 'timer');
 
 	$irc->connect( IRC_SERVER, IRC_PORT );
-	$irc->login( IRC_NICKNAME, IRC_REALNAME, 0, IRC_USERNAME);
-	$irc->join(array( IRC_CHANNEL ));
+	$irc->login( IRC_NICKNAME, sjis( IRC_REALNAME ), 0, IRC_USERNAME);
+	$irc->join(array( sjis( IRC_CHANNEL )));
 
 	$irc->listen();
 	$irc->disconnect();
