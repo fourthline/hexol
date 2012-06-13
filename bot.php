@@ -12,21 +12,40 @@ require_once("mabi/get_today.php");
 
 
 function sjis( $str ) {
-	$result = mb_convert_encoding($str, "SJIS", "UTF-8");
-	
-	return $result;
+	return mb_convert_encoding($str, "SJIS", "UTF-8");
+}
+function jis( $str ) {
+	return mb_convert_encoding($str, "JIS", "UTF-8");
 }
 
 
 class mybot
 {
+	private $irc;
+	private $channel1;
+	private $channel2;
+
+	function __construct( &$irc, $ch1, $ch2 ) {
+		$this->irc = $irc;
+		$this->channel1 = jis( $ch1 );
+		$this->channel2 = jis( $ch2 );
+		
+		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>update', $bot, 'update');
+		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>quit', $bot, 'quit');
+		$irc->registerActionhandler(SMARTIRC_TYPE_JOIN, '.*', $this, 'naruto');
+		$irc->registerTimehandler( BOT_COMMAND_TIMER, $this, 'exec_bot_command');
+		$irc->registerTimehandler( CONNECTION_TIMER, $this, 'timer');
+		
+		$irc->join(array( jis( IRC_CHANNEL1 ), jis( IRC_CHANNEL2 ) ));
+	}
+	
 	function update(&$irc) {
 		$str = $str = today_mission_string();
 		
 		print " [ ".date( DATE_COOKIE ). " ] " . "update topic: \"" . $str . "\"\n";
-		$irc->setTopic( IRC_CHANNEL, sjis( $str ) );
+		$irc->setTopic( $this->channel1, sjis( $str ) );
 	}
-		
+
 	function quit(&$irc) {
 		$irc->quit( QUIT_MESSAGE );
 	}
@@ -41,7 +60,7 @@ class mybot
 	}
 	
  	function timer(&$irc) {
-		$irc->getTopic( IRC_CHANNEL );
+		$irc->getTopic( $this->channel1 );
 	} 
 	
 	function exec_bot_command(&$irc) {
@@ -54,11 +73,14 @@ class mybot
 		case "update":
 			$this->update( $irc );
 			break;
-		case "getList":
-			$irc->getList();
+		case "join":
+			$irc->join(array( $this->channel2 ));
+			break;
+		case "part":
+			$irc->part(array( $this->channel2 ));
 			break;
 		case "naruto":
-			$data->channel = IRC_CHANNEL;
+			$data->channel = $this->channel1;
 			$data->nick = $param;
 			$this->naruto( $irc, $data );
 		break;
@@ -68,20 +90,14 @@ class mybot
 
 function bot_main()
 {
-	$bot = &new mybot();
 	$irc = &new Net_SmartIRC();
 //	$irc->setDebug(SMARTIRC_DEBUG_ALL);
 	$irc->setDebug(8127);
-	
-	$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>update', $bot, 'update');
-	$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>quit', $bot, 'quit');
-	$irc->registerActionhandler(SMARTIRC_TYPE_JOIN, '.*', $bot, 'naruto');
-	$irc->registerTimehandler( BOT_COMMAND_TIMER, $bot, 'exec_bot_command');
-	$irc->registerTimehandler( CONNECTION_TIMER, $bot, 'timer');
 
 	$irc->connect( IRC_SERVER, IRC_PORT );
 	$irc->login( IRC_NICKNAME, sjis( IRC_REALNAME ), 0, IRC_USERNAME);
-	$irc->join(array( sjis( IRC_CHANNEL )));
+	
+	$bot = &new mybot( $irc, IRC_CHANNEL1, IRC_CHANNEL2 );
 
 	$irc->listen();
 	$irc->disconnect();
