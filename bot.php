@@ -21,26 +21,42 @@ function jis( $str ) {
 
 class mybot
 {
-	private $irc;
 	private $channel1;
 	private $channel2;
 
-	function __construct( &$irc, $ch1, $ch2 ) {
-		$this->irc = $irc;
+	function __construct( $ch1, $ch2 ) {
 		$this->channel1 = jis( $ch1 );
 		$this->channel2 = jis( $ch2 );
+	}
+	
+	function connect() {
+		$irc = &new Net_SmartIRC();
 		
-		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>update', $bot, 'update');
-		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>quit', $bot, 'quit');
+		//	$irc->setDebug(SMARTIRC_DEBUG_ALL);
+		$irc->setDebug(8127);
+
+		$irc->connect( IRC_SERVER, IRC_PORT );
+		$irc->login( IRC_NICKNAME, sjis( IRC_REALNAME ), 0, IRC_USERNAME);
+		
+		// regist remote commands
+		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>update', $this, 'update');
+		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>quit', $this, 'quit');
+		
+		// auto naruto
 		$irc->registerActionhandler(SMARTIRC_TYPE_JOIN, '.*', $this, 'naruto');
+		
+		// local timer
 		$irc->registerTimehandler( BOT_COMMAND_TIMER, $this, 'exec_bot_command');
 		$irc->registerTimehandler( CONNECTION_TIMER, $this, 'timer');
 		
-		$irc->join(array( jis( IRC_CHANNEL1 ), jis( IRC_CHANNEL2 ) ));
+		$irc->join( array( $this->channel1, $this->channel2 ));
+		
+		$irc->listen();
+		$irc->disconnect();
 	}
 	
 	function update(&$irc) {
-		$str = $str = today_mission_string();
+		$str = today_mission_string();
 		
 		print " [ ".date( DATE_COOKIE ). " ] " . "update topic: \"" . $str . "\"\n";
 		$irc->setTopic( $this->channel1, sjis( $str ) );
@@ -88,20 +104,6 @@ class mybot
 	}
 }
 
-function bot_main()
-{
-	$irc = &new Net_SmartIRC();
-//	$irc->setDebug(SMARTIRC_DEBUG_ALL);
-	$irc->setDebug(8127);
-
-	$irc->connect( IRC_SERVER, IRC_PORT );
-	$irc->login( IRC_NICKNAME, sjis( IRC_REALNAME ), 0, IRC_USERNAME);
-	
-	$bot = &new mybot( $irc, IRC_CHANNEL1, IRC_CHANNEL2 );
-
-	$irc->listen();
-	$irc->disconnect();
-}
 
 function parse_command(&$command, &$param)
 {
@@ -135,8 +137,10 @@ function user_allow( $s ) {
 }
 
 
-file_put_contents( BOT_COMMAND_FILE, "" );
-bot_main();
+file_put_contents( BOT_COMMAND_FILE, "" );       // clear command file
+
+$bot = &new mybot( IRC_CHANNEL1, IRC_CHANNEL2 );
+$bot->connect();
 
 ?>
 
