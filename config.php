@@ -3,6 +3,8 @@
 
 define("IRC_CHANNEL1", "#TMC" );
 define("IRC_CHANNEL2", "#TMC雑談" );
+define("IRC_JOIN_CH2", true );
+
 define("IRC_SERVER", "irc.reicha.net" );
 define("IRC_PORT", 6667 );
 
