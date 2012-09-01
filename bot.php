@@ -49,7 +49,10 @@ class mybot
 		$irc->registerTimehandler( BOT_COMMAND_TIMER, $this, 'exec_bot_command');
 		$irc->registerTimehandler( CONNECTION_TIMER, $this, 'timer');
 		
-		$irc->join( array( $this->channel1, $this->channel2 ));
+		$irc->join( $this->channel1);
+		if ( IRC_JOIN_CH2 == true ) {
+			$irc->join( $this->channel2);
+		}
 		
 		$irc->listen();
 		$irc->disconnect();
@@ -57,9 +60,11 @@ class mybot
 	
 	function update(&$irc) {
 		$str = today_mission_string();
+		$str_topic = delete_flc_section( $str );
 		
 		print " [ ".date( DATE_COOKIE ). " ] " . "update topic: \"" . $str . "\"\n";
-		$irc->setTopic( $this->channel1, sjis( $str ) );
+		$irc->setTopic( $this->channel1, sjis( $str_topic ) );
+		$irc->message( SMARTIRC_TYPE_NOTICE, $this->channel1, sjis( $str ) );
 	}
 
 	function quit(&$irc) {

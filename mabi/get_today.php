@@ -15,6 +15,13 @@ function get_mission( $string ) {
   return $mission;
 }
 
+function delete_flc_section( $string ) {
+  $str = preg_replace("/FLC:[^\)]*\)/u", "", $string);
+  
+  return $str;
+}
+
+
 function get_date_string( $string ) {
   $date_start = strpos($string, "<dc:date>") + 9;
   $date_end = strpos($string, "</dc:date>");
@@ -33,6 +40,7 @@ function replace_mission_string( $string) {
     'タラ「' => '【たら】',
     '時間無制限' => '無制限',
     '」' => '',
+    '＆「' => '',
     
     'クラッグカウを退治' => 'クラッグカウ',
     'スリアブクィリンの岩石' => 'クィリン',
