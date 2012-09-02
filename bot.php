@@ -60,10 +60,8 @@ class mybot
 	
 	function update(&$irc) {
 		$str = today_mission_string();
-		$str_topic = delete_flc_section( $str );
 		
 		print " [ ".date( DATE_COOKIE ). " ] " . "update topic: \"" . $str . "\"\n";
-		$irc->setTopic( $this->channel1, sjis( $str_topic ) );
 		$irc->message( SMARTIRC_TYPE_NOTICE, $this->channel1, sjis( $str ) );
 	}
 

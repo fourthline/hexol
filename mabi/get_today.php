@@ -11,6 +11,9 @@ function get_mission( $string ) {
   $end_index = strpos($string, "</title>");
 
   $mission = substr($string, $start_index, $end_index-$start_index);
+  
+  // 制限人数を削除します。
+  $mission = preg_replace("/(\/[^\)]*)(\))/u", "$2", $mission);
 
   return $mission;
 }
@@ -36,20 +39,22 @@ function get_date_string( $string ) {
 
 function replace_mission_string( $string) {
   $array = array(
-    'タルティーン「' => '【たる】',
-    'タラ「' => '【たら】',
+    'タルティーン「' => '[たる]',
+    'タラ「' => '[たら]',
     '時間無制限' => '無制限',
     '」' => '',
     '＆「' => '',
+    'FLC: ' => 'FLC:',
+    '　' => ' ',
     
-    'クラッグカウを退治' => 'クラッグカウ',
+    'クラッグカウを退治' => 'カウ',
     'スリアブクィリンの岩石' => 'クィリン',
-    'シャドウウォーリアを退治' => 'シャドウォーリア',
-    'ポウォールコマンダーを退治 I' => 'ポコマ I',
-    'ポウォールコマンダーを退治 II' => 'ポコマ II',
+    'シャドウウォーリアを退治' => 'シャドウォ',
+    'ポウォールコマンダーを退治 I' => 'ポコマI',
+    'ポウォールコマンダーを退治 II' => 'ポコマII',
     'シャドウウィザードを退治' => 'シャドウィザ',
-    'タルティーン制圧戦 I' => '制圧戦 I',
-    'タルティーン制圧戦 II' => '制圧戦 II',
+    'タルティーン制圧戦 I' => '制圧戦I',
+    'タルティーン制圧戦 II' => '制圧戦II',
     'タルティーン防御戦' => '防御戦',
     '偵察兵救出' => '偵察兵',
     'ドレンの頼み' => 'ドレン',
@@ -90,7 +95,7 @@ function today_mission_string() {
 
   $date = get_date_string( $contents );
   
-  $string = $date . replace_mission_string( $mission );
+  $string = $date ." ". replace_mission_string( $mission );
 
   return $string;
 }
