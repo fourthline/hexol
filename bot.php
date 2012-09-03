@@ -62,7 +62,7 @@ class mybot
 		$str = today_mission_string();
 		
 		print " [ ".date( DATE_COOKIE ). " ] " . "update topic: \"" . $str . "\"\n";
-		$irc->message( SMARTIRC_TYPE_NOTICE, $this->channel1, sjis( $str ) );
+		$irc->setTopic( $this->channel1, sjis( $str ) );
 	}
 
 	function quit(&$irc) {
