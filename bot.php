@@ -21,88 +21,101 @@ function jis( $str ) {
 
 class mybot
 {
+	private $irc;
 	private $channel1;
 	private $channel2;
 
 	function __construct( $ch1, $ch2 ) {
+		$this->irc = &new Net_SmartIRC();
 		$this->channel1 = jis( $ch1 );
 		$this->channel2 = jis( $ch2 );
 	}
 	
 	function connect() {
-		$irc = &new Net_SmartIRC();
-		
-		//	$irc->setDebug(SMARTIRC_DEBUG_ALL);
-		$irc->setDebug(8127);
+		$this->irc->setDebug(8127);
 
-		$irc->connect( IRC_SERVER, IRC_PORT );
-		$irc->login( IRC_NICKNAME, sjis( IRC_REALNAME ), 0, IRC_USERNAME);
+		$this->irc->connect( IRC_SERVER, IRC_PORT );
+		$this->irc->login( IRC_NICKNAME, sjis( IRC_REALNAME ), 0, IRC_USERNAME);
 		
 		// regist remote commands
-		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>update', $this, 'update');
-		$irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>quit', $this, 'quit');
+		$this->irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>update', $this, 'update');
+		$this->irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>quit', $this, 'quit');
 		
 		// auto naruto
-		$irc->registerActionhandler(SMARTIRC_TYPE_JOIN, '.*', $this, 'naruto');
+		$this->irc->registerActionhandler(SMARTIRC_TYPE_JOIN, '.*', $this, 'e_naruto');
 		
 		// local timer
-		$irc->registerTimehandler( BOT_COMMAND_TIMER, $this, 'exec_bot_command');
-		$irc->registerTimehandler( CONNECTION_TIMER, $this, 'timer');
+		$this->irc->registerTimehandler( BOT_COMMAND_TIMER, $this, 'exec_bot_command');
+		$this->irc->registerTimehandler( CONNECTION_TIMER, $this, 'timer');
 		
-		$irc->join( $this->channel1);
+		$this->irc->join( $this->channel1);
 		if ( IRC_JOIN_CH2 == true ) {
-			$irc->join( $this->channel2);
+			$this->irc->join( $this->channel2);
 		}
 		
-		$irc->listen();
-		$irc->disconnect();
+		$this->irc->listen();
+		$this->irc->disconnect();
 	}
 	
-	function update(&$irc) {
+	function update() {
 		$str = today_mission_string();
 		
-		print " [ ".date( DATE_COOKIE ). " ] " . "update topic: \"" . $str . "\"\n";
-		$irc->setTopic( $this->channel1, sjis( $str ) );
+		$this->topic( $str );
+	}
+	function topic( $string ) {
+		$this->irc->setTopic( $this->channel1, sjis( $string ) );
+	}
+	function message( $string ) {
+		$this->irc->message( SMARTIRC_TYPE_CHANNEL, $this->channel1, sjis( $string ) );
 	}
 
-	function quit(&$irc) {
-		$irc->quit( QUIT_MESSAGE );
+	function quit() {
+		$this->irc->quit( QUIT_MESSAGE );
 	}
 	
-	function naruto(&$irc, &$data) {
-		if ($data->nick == $irc->_nick)
+	function e_naruto( &$irc, &$data ) {
+		$this->naruto( $data );
+	}
+	function naruto( &$data ) {
+		if ($data->nick == $this->irc->_nick)
 			return;
 		
 		if ( user_allow( $data->nick ) ) {
-			$irc->op($data->channel, $data->nick);
+			$this->irc->op($data->channel, $data->nick);
 		}
 	}
 	
- 	function timer(&$irc) {
-		$irc->getTopic( $this->channel1 );
+ 	function timer() {
+		$this->irc->getTopic( $this->channel1 );
 	} 
 	
-	function exec_bot_command(&$irc) {
+	function exec_bot_command() {
 		parse_command($command, $param);
 
 		switch ( $command ) {
 		case "quit":
-			$this->quit( $irc );
+			$this->quit();
 			break;
 		case "update":
-			$this->update( $irc );
+			$this->update();
 			break;
 		case "join":
-			$irc->join(array( $this->channel2 ));
+			$this->irc->join(array( $this->channel2 ));
 			break;
 		case "part":
-			$irc->part(array( $this->channel2 ));
+			$this->irc->part(array( $this->channel2 ));
 			break;
 		case "naruto":
 			$data->channel = $this->channel1;
 			$data->nick = $param;
-			$this->naruto( $irc, $data );
-		break;
+			$this->naruto( $data );
+			break;
+		case "topic":
+			$this->topic( $param );
+			break;
+		case "message":
+			$this->message( $param );
+			break;
 		}
 	}
 }
