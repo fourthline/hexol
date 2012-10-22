@@ -27,6 +27,7 @@ class mybot
 
 	function __construct( $ch1, $ch2 ) {
 		$this->irc = &new Net_SmartIRC();
+		$this->irc->setChannelSyncing( true );
 		$this->channel1 = jis( $ch1 );
 		$this->channel2 = jis( $ch2 );
 	}
@@ -81,7 +82,9 @@ class mybot
 			return;
 		
 		if ( user_allow( $data->nick ) ) {
-			$this->irc->op($data->channel, $data->nick);
+			if ( $this->irc->isOpped( $data->channel, $data->nick ) == false ) {
+				$this->irc->op($data->channel, $data->nick);
+			}
 		}
 	}
 	

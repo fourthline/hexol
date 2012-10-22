@@ -43,11 +43,15 @@ IRCを使って、特定のメッセージを送ることで実行されるコ�
 - naruto (オペレータ権限付与, allow.confに登録されているニックネームに対してのみ)
 - join (2nd ch)
 - part (2nd ch)
+- topic
+- message
 
 ### 使用例
     $ echo "quit" > command
     $ echo "update" > command
     $ echo "naruto:<user>" > command
+    $ echo "topic:<text>" > command
+    $ echo "message:<text>" > command
 
 
 ## cron設定
