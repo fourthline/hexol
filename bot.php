@@ -82,9 +82,7 @@ class mybot
 			return;
 		
 		if ( user_allow( $data->nick ) ) {
-			if ( $this->irc->isOpped( $data->channel, $data->nick ) == false ) {
-				$this->irc->op($data->channel, $data->nick);
-			}
+			$this->irc->op($data->channel, $data->nick);
 		}
 	}
 	
