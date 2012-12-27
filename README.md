@@ -30,6 +30,8 @@ IRCを使って、特定のメッセージを送ることで実行されるコ�
 ### 使用例 (IRCメッセージ)
     hexol>quit
     hexol>update
+    hexol>update enable
+    hexol>update disable
     hexol>topic:<text>
 
 

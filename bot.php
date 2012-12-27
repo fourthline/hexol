@@ -23,6 +23,8 @@ class mybot
 	private $irc;
 	private $channel1;
 	private $channel2;
+	
+	private $update_enable = true;
 
 	function __construct( $ch1, $ch2 ) {
 		$this->irc = &new Net_SmartIRC();
@@ -39,7 +41,7 @@ class mybot
 		
 		// regist remote commands
 		$this->irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>topic:.+', $this, 'e_topic');
-		$this->irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>update', $this, 'update');
+		$this->irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>update', $this, 'e_update');
 		$this->irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>quit', $this, 'quit');
 		
 		// auto naruto
@@ -58,9 +60,29 @@ class mybot
 		$this->irc->disconnect();
 	}
 	
+	function e_update( &$irc, &$data ) {
+		$pos = strpos( $data->message, "enable" );
+		if ( $pos !== false ) {
+			$this->update_enable = true;
+		}
+		
+		$pos = strpos( $data->message, "disable" );
+		if ( $pos !== false ) {
+			$this->update_enable = false;
+		}
+		
+		$this->update();
+	}
+	
 	function update() {
-		// Todayミッション更新
-		exec("php today_update.php >> command &");
+		if ( $this->update_enable == true ) {
+			$this->notice( "update enable." );
+			
+			// Todayミッション更新
+			exec("php today_update.php >> command &");
+		} else {
+			$this->notice( "update disable." );
+		}
 	}
 	
 	function e_topic( &$irc, &$data ) {
@@ -76,6 +98,10 @@ class mybot
 	
 	function message( $string ) {
 		$this->irc->message( SMARTIRC_TYPE_CHANNEL, $this->channel1, sjis( $string ) );
+	}
+	
+	function notice( $string ) {
+		$this->irc->message( SMARTIRC_TYPE_NOTICE, $this->channel1, sjis( $string ) );
 	}
 
 	function quit() {
