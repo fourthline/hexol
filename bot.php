@@ -38,6 +38,7 @@ class mybot
 		$this->irc->login( IRC_NICKNAME, sjis( IRC_REALNAME ), 0, IRC_USERNAME);
 		
 		// regist remote commands
+		$this->irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>topic:.+', $this, 'e_topic');
 		$this->irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>update', $this, 'update');
 		$this->irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL, PREFIX.'>quit', $this, 'quit');
 		
@@ -60,6 +61,13 @@ class mybot
 	function update() {
 		// Todayミッション更新
 		exec("php today_update.php >> command &");
+	}
+	
+	function e_topic( &$irc, &$data ) {
+		$str = mb_convert_encoding( $data->message, 'UTF-8', 'auto' );
+		$pattern = PREFIX.'>topic:';
+		$pos = strpos( $str, $pattern ) + strlen( $pattern );
+		$this->topic( substr( $str, $pos ) );
 	}
 	
 	function topic( $string ) {
@@ -91,6 +99,9 @@ class mybot
 		$this->irc->getTopic( $this->channel1 );
 	} 
 	
+	/**
+	 * ローカルコマンドの実行
+	 */
 	function exec_bot_command() {
 		parse_command($command, $param);
 
