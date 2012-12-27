@@ -1,6 +1,6 @@
 <?php
 /**
- * join bot. 接続してきたユーザに、オペレータ権限付与を行う。補助機能で、影情報更新も。
+ * join bot. 接続してきたユーザに、オペレータ権限付与を行う。
  *
  * @author     たんらる
  * @since      2012/05/20
@@ -8,7 +8,6 @@
 
 require_once("config.php");
 require_once("Net/SmartIRC.php");
-require_once("mabi/get_today.php");
 
 
 function sjis( $str ) {
@@ -59,13 +58,14 @@ class mybot
 	}
 	
 	function update() {
-		$str = today_mission_string();
-		
-		$this->topic( $str );
+		// Todayミッション更新
+		exec("php today_update.php >> command &");
 	}
+	
 	function topic( $string ) {
 		$this->irc->setTopic( $this->channel1, sjis( $string ) );
 	}
+	
 	function message( $string ) {
 		$this->irc->message( SMARTIRC_TYPE_CHANNEL, $this->channel1, sjis( $string ) );
 	}
@@ -77,6 +77,7 @@ class mybot
 	function e_naruto( &$irc, &$data ) {
 		$this->naruto( $data );
 	}
+	
 	function naruto( &$data ) {
 		if ($data->nick == $this->irc->_nick)
 			return;
