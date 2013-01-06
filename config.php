@@ -21,5 +21,7 @@ define("QUIT_MESSAGE", "Leaving...");
 
 define("BOT_COMMAND_TIMER", 1000);
 define("CONNECTION_TIMER", 120000);
+
+define("UPDATE_COMMAND", "php today_update.php >> command &");
 ?>
 

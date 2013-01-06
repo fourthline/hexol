@@ -79,7 +79,7 @@ class mybot
 			$this->notice( "update enable." );
 			
 			// Todayミッション更新
-			exec("php today_update.php >> command &");
+			exec( UPDATE_COMMAND );
 		} else {
 			$this->notice( "update disable." );
 		}
@@ -154,6 +154,9 @@ class mybot
 			break;
 		case "message":
 			$this->message( $param );
+			break;
+		case "notice":
+			$this->notice( $param );
 			break;
 		}
 	}
