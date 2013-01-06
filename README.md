@@ -4,7 +4,6 @@
 ## Requirements
 - php
 - SmartIRC
-- wget
 - cron
 
 ## 機能

@@ -5,26 +5,33 @@
  * @author     たんらる
  * @since      2012/05/20
  */
- 
+
+
+/** 
+ * 最初のtitleフィールドを切り抜きます
+ *
+ * @param string  取得したRSSフィールドの文字列（パース対象）
+ * @return 切り抜いた文字列
+ */
 function get_mission( $string ) {
   $start_index = strpos($string, "<title>") + 7;
   $end_index = strpos($string, "</title>");
 
   $mission = substr($string, $start_index, $end_index-$start_index);
   
-  // 制限人数を削除します。
+  // 制限時間を削除します。
   $mission = preg_replace("/(\/[^\)]*)(\))/u", "$2", $mission);
 
   return $mission;
 }
 
-function delete_flc_section( $string ) {
-  $str = preg_replace("/FLC:[^\)]*\)/u", "", $string);
-  
-  return $str;
-}
 
-
+/** 
+ * 最初のdateフィールドの日付を切り取ります
+ *
+ * @param string  取得したRSSフィールドの文字列（パース対象）
+ * @return 日付の文字列
+ */
 function get_date_string( $string ) {
   $date_start = strpos($string, "<dc:date>") + 9;
   $date_end = strpos($string, "</dc:date>");
@@ -86,9 +93,12 @@ function replace_mission_string( $string) {
 
 function today_mission_string() {
 
-  exec("wget http://weather.erinn.biz/today.rss.php");
-  $rss = file_get_contents("today.rss.php");
-  exec("rm today.rss.php");
+  $rss = file_get_contents("http://weather.erinn.biz/today.rss.php");
+  
+  /* RSSの取得失敗 */
+  if ( $rss === false ) {
+  	return false;
+  }
   
   $contents = strstr($rss, "<item rdf:about=\"http://weather.erinn.biz/today.php\">");
 
