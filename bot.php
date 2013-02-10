@@ -103,6 +103,10 @@ class mybot
 	function notice( $string ) {
 		$this->irc->message( SMARTIRC_TYPE_NOTICE, $this->channel1, sjis( $string ) );
 	}
+	
+	function notice2( $string ) {
+		$this->irc->message( SMARTIRC_TYPE_NOTICE, $this->channel2, sjis( $string ) );
+	}
 
 	function quit() {
 		$this->irc->quit( QUIT_MESSAGE );
@@ -157,6 +161,9 @@ class mybot
 			break;
 		case "notice":
 			$this->notice( $param );
+			break;
+		case "notice2":
+			$this->notice2( $param );
 			break;
 		}
 	}
