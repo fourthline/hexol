@@ -3,10 +3,10 @@
  * 1分おきに、ツイッターの検索結果から1ツイートをとってくる standalone式スクリプト
  * RTは除外。
  * option:
- *   -s<keyword> 検索キーワード (必須)
- *   -t<sec> ループ間隔
- *   -o<filename> 出力先のコマンドファイル
- *   -i<initialID> 検索開始ID
+ *	 -s<keyword> 検索キーワード (必須)
+ *	 -t<sec> ループ間隔
+ *	 -o<filename> 出力先のコマンドファイル
+ *	 -i<initialID> 検索開始ID
  */
  
 require_once("oauth_config.php");
@@ -49,7 +49,7 @@ function main($keyword, $sec, $filename, $initialID)
 		} else {
 			$text = $tweet->toString->__invoke() . "\n";
 			
-			if ( isset($filename) ) {   // -oオプション
+			if ( isset($filename) ) {	// -oオプション
 				file_put_contents( $filename, FILEOUTPUT_PREFIX.$text, FILE_APPEND );
 				echo "[fileoutput>".$filename."] ".FILEOUTPUT_PREFIX.$text;
 			} else {
@@ -64,35 +64,35 @@ function main($keyword, $sec, $filename, $initialID)
 
 
 class TweetSearch {
-    private $since_id = null;
-    private $oauth = null;
-    private $keyword = null;
-    
-    /**
-     * @param $keyword  Twitter APIに投げる検索キーワード q
-     * @param $id       Twitter APIくっつける sinceID
-     */
-    public function __construct($keyword, $id=null) {
-    	$this->oauth = new OAuth( CONSUMER_KEY, CONSUMER_SECRET );
+	private $since_id = null;
+	private $oauth = null;
+	private $keyword = null;
+	
+	/**
+	 * @param $keyword	Twitter APIに投げる検索キーワード q
+	 * @param $id		Twitter APIくっつける sinceID
+	 */
+	public function __construct($keyword, $id=null) {
+		$this->oauth = new OAuth( CONSUMER_KEY, CONSUMER_SECRET );
 		$this->oauth->setToken( ACCESS_TOKEN, ACCESS_TOKEN_SECRET );
 		$this->oauth->disableSSLChecks();
 
-    	$this->since_id = $id;
-    	$this->keyword = $keyword;
-    }
-    
-    /**
-     * 新しいツイートを1つ取得します。
-     * 前回取得したツイートは返しません。
-     * 複数のツイートを取得した場合は、一番古いものを返します。
-     * 
-     * @return 取得したツイートの1つのstatus.
-     */
-    public function nextTweet() {
-    	if ($this->since_id == null) {   // 前回取得したツイートがない場合。
+		$this->since_id = $id;
+		$this->keyword = $keyword;
+	}
+	
+	/**
+	 * 新しいツイートを1つ取得します。
+	 * 前回取得したツイートは返しません。
+	 * 複数のツイートを取得した場合は、一番古いものを返します。
+	 * 
+	 * @return 取得したツイートの1つのstatus.
+	 */
+	public function nextTweet() {
+		if ($this->since_id == null) {	 // 前回取得したツイートがない場合。
 			$statuses = $this->searchTweet(1);
 			$tweet = $statuses[0];
-		} else {                         // 前回取得したツイートに続ける場合。
+		} else {						 // 前回取得したツイートに続ける場合。
 			$statuses = $this->searchTweet(15, $this->since_id);
 			$count = count( $statuses );
 			if ( $count == 0 ) {
