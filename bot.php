@@ -143,10 +143,14 @@ class mybot
 			$this->update();
 			break;
 		case "join":
-			$this->irc->join(array( $this->channel2 ));
+			if ( $param !== null ) {
+				$this->irc->join(array( jis($param) ));
+			}
 			break;
 		case "part":
-			$this->irc->part(array( $this->channel2 ));
+			if ( $param !== null ) {
+				$this->irc->part(array( jis($param) ));
+			}
 			break;
 		case "naruto":
 			$data->channel = $this->channel1;
