@@ -10,13 +10,14 @@
 require_once("mabi/get_today.php");
 $todayDate = date( "n/j" );
 
-for ($i = 0 ; $i <= 5 ; $i++) {
+for ($i = 1; $i <= 5; $i++) {
   $str = today_mission_string();
   if ( strncmp( $todayDate, $str, strlen( $todayDate ) ) == 0 ) {
     print "topic:" . $str;
     break;
   }
   
+  print "notice2:update_retry( ".$i." )";
   sleep( 30*60 ); // 30min
 }
 

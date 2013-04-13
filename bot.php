@@ -76,12 +76,8 @@ class mybot
 	
 	function update() {
 		if ( $this->update_enable == true ) {
-			$this->notice( "update enable." );
-			
 			// Todayミッション更新
 			exec( UPDATE_COMMAND );
-		} else {
-			$this->notice( "update disable." );
 		}
 	}
 	
