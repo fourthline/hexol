@@ -1,17 +1,25 @@
 <?php
 /**
- * bot.php向け、影情報更新のローカルコマンドを発行する。
+ * bot.php蜷代￠縲∝ｽｱ諠�蝣ｱ譖ｴ譁ｰ縺ｮ繝ｭ繝ｼ繧ｫ繝ｫ繧ｳ繝槭Φ繝峨ｒ逋ｺ陦後☆繧九�
  *
- * @author     たんらる
+ * @author     縺溘ｓ繧峨ｋ
  * @since      2012/12/27
  */
 
 
 require_once("mabi/get_today.php");
+$todayDate = date( "n/j" );
 
-$str = today_mission_string();
+for ($i = 0 ; $i <= 5 ; $i++) {
+  $str = today_mission_string();
+  if ( strncmp( $todayDate, $str, strlen( $todayDate ) ) == 0 ) {
+    print "topic:" . $str;
+    break;
+  }
+  
+  sleep( 30*60 ); // 30min
+}
 
-print "topic:" . $str;
 
 ?>
 
