@@ -20,6 +20,10 @@ for ($i = 1; $i <= 20; $i++) {
     break;
   }
   
+  if ($i == 1) {
+    print "topic:" . $todayDate . " （不明）";
+  }
+  
   syslog(LOG_INFO, "retry [".$i."]");
   sleep( 30*60 ); // 30min
 }
